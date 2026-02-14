@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>For You ❤️ & For Boo chan 🫶🏻❤️</title>
+<style>
+body {
+    margin: 0;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    background-color: #fce4ec;
+    overflow: hidden;
+    color: white;
+}
+
+/* ---------------- First Page ---------------- */
+#firstPage h1 {
+    color: #e91e63;
+    margin-top: 50px;
+}
+#firstPage img {
+    width: 250px;
+    margin-top: 30px;
+    border-radius: 10px;
+}
+#firstPage button {
+    padding: 10px 20px;
+    background-color: #e91e63;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 20px;
+    transition: background-color 0.3s;
+}
+#firstPage button:hover {
+    background-color: #d81b60;
+}
+
+/* ---------------- Second Love Page ---------------- */
+#secondPage {
+    display: none;
+    background: linear-gradient(to bottom right, #ff758c, #ffb199);
+    text-align: center;
+}
+
+#secondPage h1 {
+    font-size: 40px;
+    margin-top: 30vh;
+    text-shadow: 0 0 20px #fff;
+    animation: glow 2s infinite alternate;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px #fff; }
+    to { text-shadow: 0 0 30px #ffdde1; }
+}
+
+#secondPage button {
+    padding: 15px 30px;
+    font-size: 18px;
+    margin: 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+#yesBtn {
+    background-color: #ff4d6d;
+    color: white;
+}
+
+#noBtn {
+    background-color: white;
+    color: black;
+}
+
+.slide {
+    width: 80%;
+    max-height: 400px;
+    display: none;
+    margin-top: 20px;
+    border-radius: 15px;
+}
+
+#dateQuestion {
+    display: none;
+    font-size: 28px;
+    margin-top: 30px;
+    animation: fadeIn 3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.heart {
+    position: absolute;
+    color: white;
+    animation: float 4s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-600px); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- ---------------- First Page ---------------- -->
+<div id="firstPage">
+    <h1>For You ❤️</h1>
+    <img src="photo1.JPG" alt="Cute Image">
+    <br>
+    <button onclick="goToLovePage()">Click Me</button>
+</div>
+
+<!-- ---------------- Second Love Page ---------------- -->
+<div id="secondPage">
+    <h1 id="intro">For Boo chan 🫶🏻❤️</h1>
+
+    <button id="yesBtn" onclick="startLove()">YES</button>
+    <button id="noBtn">NO</button>
+
+    <br>
+
+    <img src="photo1.JPG" class="slide">
+    <img src="photo2.JPG" class="slide">
+
+    <div id="dateQuestion">
+        Would you go on a date with me on 17/02/2026? ❤️
+        <br><br>
+        <button onclick="finishLove()">OK</button>
+    </div>
+
+    <audio id="bgMusic" src="love.mp3" loop></audio>
+</div>
+
+<script>
+/* -------- Link First Page to Second Page -------- */
+function goToLovePage() {
+    document.getElementById("firstPage").style.display = "none";
+    document.getElementById("secondPage").style.display = "block";
+}
+
+/* -------- Second Page Animation & Slides -------- */
+let slides = document.getElementsByClassName("slide");
+let current = 0;
+
+function startLove() {
+    // play music continuously
+    let music = document.getElementById("bgMusic");
+    music.volume = 0.4;
+    music.play();
+
+    // hide intro & buttons
+    document.getElementById("intro").style.display = "none";
+    document.getElementById("yesBtn").style.display = "none";
+    document.getElementById("noBtn").style.display = "block"; // NO button visible
+
+    launchConfetti();
+    floatHearts();
+    showSlides();
+
+    // show date question after 9 seconds
+    setTimeout(() => {
+        document.getElementById("dateQuestion").style.display = "block";
+    }, 9000);
+}
+
+function showSlides() {
+    slides[current].style.display = "block";
+
+    setInterval(() => {
+        slides[current].style.display = "none";
+        current = (current + 1) % slides.length;
+        slides[current].style.display = "block";
+    }, 3000);
+}
+
+/* -------- Smooth moving NO button -------- */
+const noBtn = document.getElementById("noBtn");
+
+noBtn.addEventListener("mousemove", function(e) {
+    const btnRect = noBtn.getBoundingClientRect();
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+
+    const btnX = btnRect.left + btnRect.width / 2;
+    const btnY = btnRect.top + btnRect.height / 2;
+
+    const dx = mouseX - btnX;
+    const dy = mouseY - btnY;
+    const distance = Math.sqrt(dx*dx + dy*dy);
+
+    if(distance < 100) { // move only when cursor close
+        let moveX = (dx / distance) * -100;
+        let moveY = (dy / distance) * -100;
+
+        let newX = btnRect.left + moveX;
+        let newY = btnRect.top + moveY;
+
+        // keep inside viewport
+        newX = Math.max(0, Math.min(window.innerWidth - btnRect.width, newX));
+        newY = Math.max(0, Math.min(window.innerHeight - btnRect.height, newY));
+
+        noBtn.style.position = "absolute";
+        noBtn.style.left = newX + "px";
+        noBtn.style.top = newY + "px";
+    }
+});
+
+/* -------- Confetti & Hearts -------- */
+function launchConfetti() {
+    for(let i = 0; i < 80; i++) {
+        let conf = document.createElement("div");
+        conf.style.position = "absolute";
+        conf.style.width = "8px";
+        conf.style.height = "8px";
+        conf.style.background = "white";
+        conf.style.left = Math.random() * window.innerWidth + "px";
+        conf.style.top = "-10px";
+        conf.style.animation = "fall 3s linear";
+        document.body.appendChild(conf);
+    }
+}
+
+function floatHearts() {
+    setInterval(() => {
+        let heart = document.createElement("div");
+        heart.className = "heart";
+        heart.innerHTML = "❤️";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.style.top = "90vh";
+        document.body.appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 4000);
+    }, 500);
+}
+
+/* -------- Close site after OK -------- */
+function finishLove() {
+    alert("Yay! 💖 Closing the site now...");
+    window.close(); // may require a new tab
+    // fallback if blocked:
+    // window.location.href = "about:blank";
+}
+</script>
+
+</body>
+</html>
